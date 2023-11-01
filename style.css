@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Halo";
-  src: url("../font/halo/Halo.ttf");
+  src: url("/fonts/Halo.ttf");
 }
 
 body {
@@ -11,7 +11,7 @@ body {
 
 .conteneur {
   display: grid;
-  background-image: url(../img/Design\ sans\ titre.png);
+  background-image: url(/images/background.png);
   background-size: cover;
   height: 100vh;
   margin: 0;
@@ -59,6 +59,10 @@ body {
   grid-template-rows: repeat(20, 1fr);
 }
 
+.tetromino {
+  background-color: red;
+}
+
 .frame div.grid {
   border: 1px solid#00ffff22;
 }
@@ -102,5 +106,4 @@ body {
   padding: 3px 6px;
   color: #ffffffce;
   font-weight: bolder;
-  /* font-size: 15px; */
 }
