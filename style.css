@@ -1,0 +1,106 @@
+@font-face {
+  font-family: "Halo";
+  src: url("../font/halo/Halo.ttf");
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #ffffffce;
+}
+
+.conteneur {
+  display: grid;
+  background-image: url(../img/Design\ sans\ titre.png);
+  background-size: cover;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-areas:
+    ". gameName gameName gameName ."
+    ". . tetris . .";
+  align-items: center;
+  justify-content: center;
+  grid-template-rows: 99px auto;
+}
+
+#gameName {
+  grid-area: gameName;
+  font-family: "Halo", sans-serif;
+  font-size: 47px;
+  font-weight: bolder;
+  height: 22px;
+}
+
+.main {
+  grid-area: tetris;
+  display: grid;
+  grid-template-columns: 160px 400px 160px;
+  grid-template-rows: 150px 400px 150px;
+  width: 100%;
+  grid-gap: 10px;
+}
+
+.hold {
+  grid-row: 1 / span 1;
+  grid-column: 1 / span 1;
+}
+
+.frame {
+  grid-row: 1 / span 3;
+  grid-column: 2 / span 1;
+  border-top: 4px solid #6fd3d3;
+  border-bottom: 4px solid #6fd3d3;
+  border-bottom: 4px solid #6fd3d3;
+  background: #7197c027;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+}
+
+.frame div.grid {
+  border: 1px solid#00ffff22;
+}
+
+.next {
+  grid-row: 1 / span 1;
+  grid-column: 3 / span 1;
+}
+
+.timer {
+  grid-row: 3 / span 1;
+  grid-column: 1 / span 1;
+}
+
+.score {
+  grid-row: 3 / span 1;
+  grid-column: 3 / span 1;
+}
+
+.xp {
+  display: grid;
+  width: 158px;
+  height: 119px;
+  font-size: 1.5em;
+  font-weight: bold;
+  align-items: center;
+  justify-items: center;
+}
+
+.hold,
+.next,
+.timer,
+.score {
+  border-bottom: 3px solid #6fd3d3;
+  background: #6fd3d32e;
+}
+
+.title {
+  background: #00c0c059;
+  border-bottom: 3px solid #6fd3d3;
+  padding: 3px 6px;
+  color: #ffffffce;
+  font-weight: bolder;
+  /* font-size: 15px; */
+}

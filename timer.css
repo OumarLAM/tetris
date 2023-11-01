@@ -1,0 +1,75 @@
+#app {
+  width: 100%;
+  height: 120px;
+  padding-top: 1.5%;
+}
+
+.base-timer {
+  position: relative;
+  width: 116px;
+  margin: auto;
+}
+
+.base-timer__svg {
+  transform: scaleX(-1);
+}
+
+.base-timer__circle {
+  fill: none;
+  stroke: none;
+}
+
+.base-timer__path-elapsed {
+  stroke-width: 7px;
+  stroke: #808080;
+}
+
+.base-timer__path-remaining {
+  stroke-width: 7px;
+  stroke-linecap: round;
+  transform: rotate(90deg);
+  transform-origin: center;
+  transition: 1s linear all;
+  fill-rule: nonzero;
+  stroke: currentColor;
+}
+
+.base-timer__path-remaining.green {
+  color: #41b883;
+}
+
+.base-timer__path-remaining.orange {
+  color: #ffa500;
+}
+
+.base-timer__path-remaining.red {
+  color: #ff0000;
+}
+
+.base-timer__label {
+  position: absolute;
+  width: 118px;
+  top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #ffffffce;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blinking {
+  animation: blink 0.5s linear infinite;
+  color: #ff0000;
+}
