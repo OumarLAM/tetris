@@ -1,11 +1,26 @@
+
+/*
+To do  
+- build 200 boxes
+- Create tetrominoes
+- Draw tetrominoes
+- Randomly select a tetromino and its first rotation
+- move down the tetromino
+*/
+
 // Build boxes
 let frame = document.querySelector(".frame");
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 210; i++) {
   const div = document.createElement("div");
-  div.className = "grid";
-  div.textContent = i;
+  if (i < 200) {
+    div.className = "grid";
+    div.textContent = i;
+  } else {
+    div.className = "taken";
+  }
   frame.append(div);
 }
+
 
 let squares = Array.from(document.querySelectorAll(".grid"));
 const score = document.querySelector("#score");
@@ -51,13 +66,56 @@ const tetrominoes = [lTetromino, zTetromino, tTetromino, oTetromino, iTetromino]
 
 // When we want to start drawing our tetrominoes on the squares
 let currentPosition = 4
-let current = tetrominoes[0][0]
+let currentRotation = 0
 
-// Draw the first rotation in the first tetromino
+// Select a tetromino and its first rotation randomly
+let randomTetro = Math.floor(Math.random() * tetrominoes.length)
+let currentTetro = tetrominoes[randomTetro][currentRotation]
+
+// Draw the tetromino
 const draw = () => {
-  current.forEach(index => {
-    squares[currentPosition + index].classList.add('tetromino')
+  currentTetro.forEach(index => {
+    const nextIndex = currentPosition + index;
+    if (nextIndex >= 0 && nextIndex < squares.length) {
+      squares[currentPosition + index].classList.add('tetromino')
+    }
   })
 }
 
-draw()
+draw()  // For displaying the tetromino the first time in the first line
+
+// Undraw the tetromino
+const undraw = () => {
+  currentTetro.forEach(index => {
+    const nextIndex = currentPosition + index;
+    if (nextIndex >= 0 && nextIndex < squares.length) {
+      squares[currentPosition + index].classList.remove('tetromino')
+    }
+  })
+}
+
+// Movedown the tetromino every 1 second
+const moveDown = () => {
+  undraw()
+  currentPosition += width
+  draw()
+  freeze()
+}
+
+timerId = setInterval(moveDown, 500)
+
+// freeze function
+const freeze = () => {
+  if (currentTetro.some(index => {
+    const nextIndex = currentPosition + index + width
+    return nextIndex < squares.length && squares[nextIndex].classList.contains("taken");
+  })) {
+    currentTetro.forEach(index => squares[currentPosition + index].classList.add("taken"))
+  
+  // Start a new tetromino falling
+  randomTetro = Math.floor(Math.random() * tetrominoes.length)
+  currentTetro = tetrominoes[randomTetro][currentRotation]
+  currentPosition = 4
+  draw()
+  }
+}

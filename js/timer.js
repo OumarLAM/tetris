@@ -91,7 +91,6 @@ function setRemainingPathColor(timeLeft) {
       .getElementById("base-timer-path-remaining")
       .classList.add(alert.color);
     time.classList.add("blinking");
-    console.log(timeLeft);
     if (timeLeft === 0) {
       time.classList.remove("blinking");
       time.style.color = "red";
