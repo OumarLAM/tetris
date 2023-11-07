@@ -7,6 +7,11 @@ To do
 - Randomly select a tetromino and its first rotation
 - Move down the tetromino
 - When reached the bottom or crosses another block, block it and make another fall
+- Handle moving left and right and tetromino rotation *** BUG: Rotation sometimes goes over the edge, handle properly moveDown ***
+- Display the next tetromino
+- *** TO DO : HANDLE START/PAUSE, DISPLAY NEXT TETROMINO, HANDLE GAME OVER, FIX THE BREAK FULL LINE CONCEPT IN ADDSCORE FUNCTION***
+- Assign beautiful colors to our tetrominoes
+- Add score
 */
 
 // Build boxes
@@ -25,6 +30,14 @@ for (let i = 0; i < 209; i++) {
 let squares = Array.from(document.querySelectorAll(".grid"))
 const score = document.querySelector("#score")
 const width = 10
+let xp = 0
+const colors = [
+  "red", 
+  "orange", 
+  "blue",
+  "purple",
+  "green"
+]
 
 // Drawing tetrominoes
 const lTetromino = [
@@ -78,6 +91,7 @@ const draw = () => {
     const nextIndex = currentPosition + index;
     if (nextIndex >= 0 && nextIndex < squares.length) {
       squares[currentPosition + index].classList.add('tetromino')
+      squares[currentPosition + index].style.backgroundColor = colors[randomTetro]
     }
   })
 }
@@ -90,6 +104,7 @@ const undraw = () => {
     const nextIndex = currentPosition + index;
     if (nextIndex >= 0 && nextIndex < squares.length) {
       squares[currentPosition + index].classList.remove('tetromino')
+      squares[currentPosition + index].style.backgroundColor = ''
     }
   })
 }
@@ -113,6 +128,7 @@ const freeze = () => {
     currentTetro = tetrominoes[randomTetro][currentRotation]
     currentPosition = 4
     draw()
+    // addScore()
   }
 }
 
@@ -140,6 +156,16 @@ const moveRight = () => {
   draw()
 }
 
+const rotate = () => {
+  undraw()
+
+  currentRotation++
+  if (currentRotation === currentTetro.length) currentRotation = 0
+  currentTetro = tetrominoes[randomTetro][currentRotation]
+
+  draw()
+}
+
 // Movedown the tetromino every 1 second
 const moveDown = () => {
   undraw()
@@ -153,8 +179,35 @@ timerId = setInterval(moveDown, 300)
 const keyControl = (element) => {
   if (element.keyCode === 37) { // Left Arrow
     moveLeft()
+  } else if (element.keyCode === 38) { // Up Arrow
+    rotate()
   } else if (element.keyCode === 39) {  // Right Arrow
     moveRight()
+  } else if (element.keyCode === 40) {
+    moveDown()
   }
 }
 document.addEventListener("keydown", keyControl)
+
+
+// *********** TO FIX *************************
+// const addScore = () => {
+//   for (let i = 0; i < 199; i+=width) {
+//     const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
+
+//     if (row.every(index => squares[index].classList.contains('taken'))) {
+//       xp += 10
+//       score.innerHTML = xp + " XP"
+//       row.forEach(index => {
+//         squares[index].classList.remove('taken')
+//         squares[index].classList.remove('tetromino')
+//         squares[index].style.backgroundColor = ''
+//       })
+      
+//       const lineRemoved = squares.splice(i, width)
+      
+//       squares = lineRemoved.concat(squares)
+//       squares.forEach(cell => frame.appendChild(cell))
+//     }
+//   }
+// }
