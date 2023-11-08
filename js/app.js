@@ -30,10 +30,12 @@ for (let i = 0; i < 209; i++) {
 let squares = Array.from(document.querySelectorAll(".grid"))
 const score = document.querySelector("#score")
 const width = 10
+const nextRandom = 0
 let xp = 0
+let timerId
 const colors = [
-  "red", 
-  "orange", 
+  "red",
+  "orange",
   "blue",
   "purple",
   "green"
@@ -90,8 +92,8 @@ const draw = () => {
   currentTetro.forEach(index => {
     const nextIndex = currentPosition + index;
     if (nextIndex >= 0 && nextIndex < squares.length) {
-      squares[currentPosition + index].classList.add('tetromino')
-      squares[currentPosition + index].style.backgroundColor = colors[randomTetro]
+      squares[nextIndex].classList.add('tetromino')
+      squares[nextIndex].style.backgroundColor = colors[randomTetro]
     }
   })
 }
@@ -103,8 +105,8 @@ const undraw = () => {
   currentTetro.forEach(index => {
     const nextIndex = currentPosition + index;
     if (nextIndex >= 0 && nextIndex < squares.length) {
-      squares[currentPosition + index].classList.remove('tetromino')
-      squares[currentPosition + index].style.backgroundColor = ''
+      squares[nextIndex].classList.remove('tetromino')
+      squares[nextIndex].style.backgroundColor = ''
     }
   })
 }
@@ -117,9 +119,9 @@ const freeze = () => {
     return nextIndex >= squares.length || (nextIndex >= 0 && squares[nextIndex].classList.contains("taken"))
   })) {
     currentTetro.forEach(index => {
-      const nextIndex = currentPosition + index
-      if (nextIndex >= 0 && nextIndex < squares.length) {
-        squares[nextIndex].classList.add("taken")
+      const newIndex = currentPosition + index
+      if (newIndex >= 0 && newIndex < squares.length) {
+        squares[newIndex].classList.add("taken")
       }
     });
 
@@ -128,7 +130,9 @@ const freeze = () => {
     currentTetro = tetrominoes[randomTetro][currentRotation]
     currentPosition = 4
     draw()
-    // addScore()
+    displayNext()
+    addScore()
+    gameOver()
   }
 }
 
@@ -156,16 +160,6 @@ const moveRight = () => {
   draw()
 }
 
-const rotate = () => {
-  undraw()
-
-  currentRotation++
-  if (currentRotation === currentTetro.length) currentRotation = 0
-  currentTetro = tetrominoes[randomTetro][currentRotation]
-
-  draw()
-}
-
 // Movedown the tetromino every 1 second
 const moveDown = () => {
   undraw()
@@ -174,9 +168,77 @@ const moveDown = () => {
   freeze()
 }
 
-timerId = setInterval(moveDown, 300)
+const isAtRight = () => currentTetro.some(index => (currentPosition + index + 1) % width === 0)
+const isAtLeft = () => currentTetro.some(index => (currentPosition + index) % width === 0)
+
+const checkRetroPositionAtRotation = (position) => {
+  position = position || currentPosition
+  if ((position + 1) % width < 4) {
+    if (isAtRight()) {
+      currentPosition += 1
+      checkRetroPositionAtRotation(position)
+    }
+  } else if (position % width > 5) {
+    if (isAtLeft()) {
+      currentPosition -= 1
+      checkRetroPositionAtRotation(position)
+    }
+  }
+}
+
+const rotate = () => {
+  undraw()
+  currentRotation++
+  if (currentRotation === currentTetro.length) currentRotation = 0
+  currentTetro = tetrominoes[randomTetro][currentRotation]
+  checkRetroPositionAtRotation()
+  draw()
+}
+
+// Display next tetromino
+const nextTetro = document.querySelector('.nextTetro')
+for (let i = 0; i < 16; i++) {
+  const div = document.createElement("div")
+  div.className = "mini"
+  div.textContent = i
+  nextTetro.append(div);
+}
+const miniSquares = document.querySelectorAll('.mini')
+const miniWidth = 4
+const miniIndex = 0
+
+const miniNext = [
+  [1, miniWidth + 1, miniWidth * 2 + 1, 2], // l
+  [0, miniWidth, miniWidth + 1, miniWidth * 2 + 1], // z
+  [1, miniWidth, miniWidth + 1, miniWidth * 2], // t
+  [0, 1, miniWidth, miniWidth + 1], // o
+  [1, miniWidth + 1, miniWidth * 2 + 1, miniWidth * 3 + 1]  // i
+]
+
+const displayNext = () => {
+  miniSquares.forEach(square => {
+    square.classList.remove('tetromino')
+    square.classList.backgroundColor = ''
+  })
+  miniNext[nextRandom].forEach(index => {
+    const nextInd = miniIndex + index
+    miniSquares[nextInd].classList.add('tetromino')
+    miniSquares[nextInd].style.backgroundColor = colors[nextRandom]
+  })
+}
 
 const keyControl = (element) => {
+  if (element.keyCode === 32) { // Space for play and pause
+    if (timerId) {
+      clearInterval(timerId)
+      timerId = null
+    } else {
+      draw()
+      timerId = setInterval(moveDown, 300)
+      nextRandom = Math.floor(Math.random() * tetrominoes.length)
+      displayNext()
+    }
+  }
   if (element.keyCode === 37) { // Left Arrow
     moveLeft()
   } else if (element.keyCode === 38) { // Up Arrow
@@ -191,23 +253,29 @@ document.addEventListener("keydown", keyControl)
 
 
 // *********** TO FIX *************************
-// const addScore = () => {
-//   for (let i = 0; i < 199; i+=width) {
-//     const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
+const addScore = () => {
+  for (let i = 0; i < 199; i += width) {
+    const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9]
 
-//     if (row.every(index => squares[index].classList.contains('taken'))) {
-//       xp += 10
-//       score.innerHTML = xp + " XP"
-//       row.forEach(index => {
-//         squares[index].classList.remove('taken')
-//         squares[index].classList.remove('tetromino')
-//         squares[index].style.backgroundColor = ''
-//       })
-      
-//       const lineRemoved = squares.splice(i, width)
-      
-//       squares = lineRemoved.concat(squares)
-//       squares.forEach(cell => frame.appendChild(cell))
-//     }
-//   }
-// }
+    if (row.every(index => squares[index].classList.contains('taken'))) {
+      xp += 10
+      score.innerHTML = xp + " XP"
+      row.forEach(index => {
+        squares[index].classList.remove('taken')
+        squares[index].classList.remove('tetromino')
+        squares[index].style.backgroundColor = ''
+      })
+
+      const squaresAboveRow = squares.splice(i, width)
+      squares = squaresAboveRow.concat(squares)
+      squares.forEach(cell => frame.appendChild(cell))
+    }
+  }
+}
+
+const gameOver = () => {
+  if (currentTetro.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+    score.innerHTML = "GAME OVER"
+    clearInterval(timerId)
+  }
+}
