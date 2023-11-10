@@ -9,7 +9,12 @@ To do
 - When reached the bottom or crosses another block, block it and make another fall
 - Handle moving left and right and tetromino rotation *** BUG: Rotation sometimes goes over the edge, handle properly moveDown ***
 - Display the next tetromino
-- *** TO DO : HANDLE START/PAUSE, DISPLAY NEXT TETROMINO, HANDLE GAME OVER, FIX THE BREAK FULL LINE CONCEPT IN ADDSCORE FUNCTION***
+- *** TO DO : 
+   FIX THE BREAK FULL LINE CONCEPT IN ADDSCORE FUNCTION,
+   CHANGE TIME TO START WITH ZERO,
+   ADD A START GAME PAGE, 
+   SHOW GAME OVER 3 SECONDS AND DISPLAY ANOTHER PAGE TO RESTART,
+   ADD BEAUTIFUL BORDERS TO OUR TETROMIOES***
 - Assign beautiful colors to our tetrominoes
 - Add score
 */
@@ -30,7 +35,7 @@ for (let i = 0; i < 209; i++) {
 let squares = Array.from(document.querySelectorAll(".grid"))
 const score = document.querySelector("#score")
 const width = 10
-const nextRandom = 0
+let nextRandom = 0
 let xp = 0
 let timerId
 const colors = [
@@ -126,7 +131,8 @@ const freeze = () => {
     });
 
     // Start a new tetromino falling
-    randomTetro = Math.floor(Math.random() * tetrominoes.length)
+    randomTetro = nextRandom
+    nextRandom = Math.floor(Math.random() * tetrominoes.length)
     currentTetro = tetrominoes[randomTetro][currentRotation]
     currentPosition = 4
     draw()
@@ -197,29 +203,32 @@ const rotate = () => {
 
 // Display next tetromino
 const nextTetro = document.querySelector('.nextTetro')
-for (let i = 0; i < 16; i++) {
+for (let i = 0; i < 12; i++) {
   const div = document.createElement("div")
   div.className = "mini"
   div.textContent = i
-  nextTetro.append(div);
+  nextTetro.append(div)
 }
 const miniSquares = document.querySelectorAll('.mini')
-const miniWidth = 4
+const miniWidth = 3
 const miniIndex = 0
 
 const miniNext = [
   [1, miniWidth + 1, miniWidth * 2 + 1, 2], // l
   [0, miniWidth, miniWidth + 1, miniWidth * 2 + 1], // z
-  [1, miniWidth, miniWidth + 1, miniWidth * 2], // t
-  [0, 1, miniWidth, miniWidth + 1], // o
+  [miniWidth + 1, miniWidth * 2, miniWidth * 2 + 1, miniWidth * 2 + 2], // t
+  [miniWidth, miniWidth + 1, miniWidth * 2, miniWidth * 2 + 1], // o
   [1, miniWidth + 1, miniWidth * 2 + 1, miniWidth * 3 + 1]  // i
 ]
 
 const displayNext = () => {
+  // Clear the mini grid
   miniSquares.forEach(square => {
     square.classList.remove('tetromino')
-    square.classList.backgroundColor = ''
+    square.style.backgroundColor = ''
   })
+
+  // Draw the next tetromino
   miniNext[nextRandom].forEach(index => {
     const nextInd = miniIndex + index
     miniSquares[nextInd].classList.add('tetromino')
@@ -233,9 +242,7 @@ const keyControl = (element) => {
       clearInterval(timerId)
       timerId = null
     } else {
-      draw()
       timerId = setInterval(moveDown, 300)
-      nextRandom = Math.floor(Math.random() * tetrominoes.length)
       displayNext()
     }
   }
@@ -245,10 +252,15 @@ const keyControl = (element) => {
     rotate()
   } else if (element.keyCode === 39) {  // Right Arrow
     moveRight()
-  } else if (element.keyCode === 40) {
+  } else if (element.keyCode === 40) {  // Bottom arrow
     moveDown()
   }
 }
+
+draw()
+timerId = setInterval(moveDown, 300)    
+nextRandom = Math.floor(Math.random() * tetrominoes.length)
+displayNext()
 document.addEventListener("keydown", keyControl)
 
 
